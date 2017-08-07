@@ -1,12 +1,16 @@
 package ru.geekbrains.java3.dz.dz1.petrikovskiypavel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
  *  @author Petrikovskiy Pavel
  *  @version 20170806
  *  Метод для перемещения элементов:
- *  moveElements();
+ *  moveElements(int a, int b);
+ *  Метод для помещения массива в
+ *  ArrayList:
+ *  masToArrList(T... mas);
  */
 public class MasConteinerDZ<T> {
     private T[] mas;
@@ -23,6 +27,14 @@ public class MasConteinerDZ<T> {
         T temp1 = mas[a];
         mas[a] = mas[b];
         mas[b] = temp1;
+    }
+
+    ArrayList masToArrList(T... mas) {
+        ArrayList<T> aL = new ArrayList<>();
+        for (T e : mas) {
+            aL.add(e);
+        }
+        return aL;
     }
 
     public T[] getMas() {
