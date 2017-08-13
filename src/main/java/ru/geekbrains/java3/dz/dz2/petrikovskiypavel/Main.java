@@ -29,6 +29,7 @@ class DBUse {
 //            drop(connection);
             connection.setAutoCommit(false);
             create(connection,dbName,dbTable,dbCreateString);
+            clear(connection,dbTable);
             add(connection,addString);
             connection.commit();
         } catch (SQLException | NullPointerException exception) {
@@ -80,4 +81,10 @@ class DBUse {
 //        System.out.println("Успешно удалена таблица " + dbTable +
 //                " в БД " + dbName + "!");
 //    }
+    private void clear(Connection connection, String dbTable)
+        throws SQLException {
+    Statement statement = connection.createStatement();
+    statement.executeUpdate("DELETE FROM " + dbTable);
+    System.out.println(dbTable + " успешно очищена!");
+    }
 }
