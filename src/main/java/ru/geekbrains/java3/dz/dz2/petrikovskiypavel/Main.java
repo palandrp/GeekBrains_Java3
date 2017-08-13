@@ -1,16 +1,33 @@
 package ru.geekbrains.java3.dz.dz2.petrikovskiypavel;
 
+/**
+ * Java 3. Лекция 2. Домашняя работа.
+ * 1. Создает БД, затем таблицу, затем помещает в таблицу
+ *    10000 записей.
+ * 2. Класс который создает и держит соединение имеет
+ *    публичные методы для работы с выбранной таблицей.
+ *    Но за разрыв соединения с БД отвечает пользовательское
+ *    приложение.
+ * 3. Пользовательское приложение имеет три метода для
+ *    работы с данными представленной таблицы. Логика работы
+ *    с таблицей разделена на две части, одну предоставляет
+ *    хендлер БД, в этой части выполняется работа с соединением
+ *    и SQL-стетментом. Вторая часть реализована в пользовательском
+ *    консольном приложении и отвечает за работу с результатами
+ *    выполнения запроса к БД.
+ *
+ * @author Paul Petrikovskiy
+ * @version 14 Aug 2017
+ */
 import java.sql.*;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        new MyConsoleAppForDB(new DBUse());
+        new MyConsoleAppForDB(new DBHandler());
     }
 }
-
-class DBUse {
+class DBHandler {
     private final String DBURL = "jdbc:postgresql://localhost:5432/main";
     private final String USER = "postgres";
     private final String PASSWORD = "postgres";
@@ -22,13 +39,10 @@ class DBUse {
     private String addString =
             "INSERT INTO " + dbTable +
             " (title,cost) VALUES (?,?)";
-//    private String tbDrop = "DROP TABLE " + dbTable;
     public Connection connection = null;
-    
     void go() throws SQLException, NullPointerException {
         connection = null;
         connection = open(DBURL,USER,PASSWORD);
-//            drop(connection);
         connection.setAutoCommit(false);
         create(dbName,dbTable,dbCreateString);
         clear(dbTable);
@@ -44,11 +58,11 @@ class DBUse {
         System.out.println("Подключение к базе данных прошло успешно!\n");
         return connection;
     }
-    private void create(String dbName, String dbTabele, String dbString)
+    private void create(String dbName, String dbhTabele, String dbhString)
             throws SQLException {
         Statement statement = connection.createStatement();
-        statement.executeUpdate(dbString);
-        System.out.println("Таблица " + dbTabele + " в БД " + dbName +
+        statement.executeUpdate(dbhString);
+        System.out.println("Таблица " + dbhTabele + " в БД " + dbName +
                 " успешно создана!");
     }
     private void add(String addString, String param1, Integer param2)
@@ -57,22 +71,13 @@ class DBUse {
         preparedStatement.setString(1,param1);
         preparedStatement.setInt(2,param2);
         preparedStatement.executeUpdate();
-//        System.out.println("Запись добавлена в таблицу " + dbTable +
-//                " в БД " + dbName + " успешно!");
     }
-//    private void drop(Connection connection)
-//            throws SQLException {
-//        Statement statement = connection.createStatement();
-//        statement.executeUpdate(tbDrop);
-//        System.out.println("Успешно удалена таблица " + dbTable +
-//                " в БД " + dbName + "!");
-//    }
     private void clear(String dbTable) throws SQLException {
     Statement statement = connection.createStatement();
     statement.executeUpdate("DELETE FROM " + dbTable);
     System.out.println(dbTable + " успешно очищена!");
     }
-    public ResultSet dbGetCost(String getCostString, String param1)
+    public ResultSet dbhGetCost(String getCostString, String param1)
             throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(getCostString);
         preparedStatement.setString(1,param1);
@@ -96,14 +101,13 @@ class DBUse {
 }
 
 class MyConsoleAppForDB {
-
-    MyConsoleAppForDB(DBUse db) {
+    MyConsoleAppForDB(DBHandler dbh) {
         String getCostString = "SELECT cost FROM goods WHERE title=?";
         String upTableString = "UPDATE goods SET cost=? WHERE title=?";
         String showListString = "SELECT title,cost FROM goods " +
                 "WHERE cost>=? AND cost<=?";
         try {
-            db.go();
+            dbh.go();
             Scanner scanner = new Scanner(System.in);
             System.out.println();
             System.out.println("Хай! Это консолька для взаимодействия с базой данных.\n" +
@@ -115,7 +119,7 @@ class MyConsoleAppForDB {
             switch (strings[0]){
                 case "/c":
                     try {
-                        ResultSet resultSet = db.dbGetCost(getCostString,strings[1]);
+                        ResultSet resultSet = dbh.dbhGetCost(getCostString,strings[1]);
                         boolean flag = false;
                         while (resultSet.next()) {
                             flag = true;
@@ -131,7 +135,7 @@ class MyConsoleAppForDB {
                     break;
                 case "/cu":
                     try {
-                        db.upTabelString(upTableString,Integer.parseInt(strings[2]),strings[1]);
+                        dbh.upTabelString(upTableString,Integer.parseInt(strings[2]),strings[1]);
                         System.out.println("Вроде все хорошо...");
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -140,7 +144,7 @@ class MyConsoleAppForDB {
                     break;
                 case "/di":
                     try {
-                        ResultSet resultSet = db.showListString(showListString,
+                        ResultSet resultSet = dbh.showListString(showListString,
                                 Integer.parseInt(strings[1]),
                                 Integer.parseInt(strings[2]));
                         while (resultSet.next()) {
@@ -160,7 +164,7 @@ class MyConsoleAppForDB {
             exception.printStackTrace();
             System.out.println("Что-то пошло не так...");
             try {
-                db.connection.rollback();
+                dbh.connection.rollback();
                 System.out.println("Откат изменений!... Done!");
             } catch (SQLException | NullPointerException e) {
                 e.printStackTrace();
@@ -168,7 +172,7 @@ class MyConsoleAppForDB {
             }
         } finally {
             try {
-                db.connection.close();
+                dbh.connection.close();
                 System.out.println("Закрываем соединение... Done!");
             } catch (SQLException | NullPointerException e) {
                 e.printStackTrace();
