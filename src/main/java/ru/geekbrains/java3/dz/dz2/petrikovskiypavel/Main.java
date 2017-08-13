@@ -1,10 +1,12 @@
 package ru.geekbrains.java3.dz.dz2.petrikovskiypavel;
 
 import java.sql.*;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        new DBUse().go();
+        new MyConsoleAppForDB(new DBUse());
     }
 }
 
@@ -21,38 +23,19 @@ class DBUse {
             "INSERT INTO " + dbTable +
             " (title,cost) VALUES (?,?)";
 //    private String tbDrop = "DROP TABLE " + dbTable;
+    public Connection connection = null;
     
-    void go() {
-        Connection connection = null;
-        try {
-            connection = open(DBURL,USER,PASSWORD);
+    void go() throws SQLException, NullPointerException {
+        connection = null;
+        connection = open(DBURL,USER,PASSWORD);
 //            drop(connection);
-            connection.setAutoCommit(false);
-            create(connection,dbName,dbTable,dbCreateString);
-            clear(connection,dbTable);
-            for (int i=1; i < 10001; i++) {
-                add(connection,addString,"good" + i,i*10);
-            }
-            connection.commit();
-        } catch (SQLException | NullPointerException exception) {
-            exception.printStackTrace();
-            System.out.println("Что-то пошло не так...");
-            try {
-                connection.rollback();
-                System.out.println("Откат изменений!... Done!");
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-                System.out.println("Не удалось откатить транзакцию!");
-            }
-        } finally {
-            try {
-                connection.close();
-                System.out.println("Закрываем соединение... Done!");
-            } catch (SQLException | NullPointerException e) {
-                e.printStackTrace();
-                System.out.println("Не удалось закрыть соединений!");
-            }
+        connection.setAutoCommit(false);
+        create(connection,dbName,dbTable,dbCreateString);
+        clear(connection,dbTable);
+        for (int i=1; i < 10001; i++) {
+            add(connection,addString,"good" + i,i*10);
         }
+        connection.commit();
     }
     private Connection open(String DBURL, String USER, String PASSWORD)
             throws NullPointerException, SQLException {
@@ -91,5 +74,74 @@ class DBUse {
     Statement statement = connection.createStatement();
     statement.executeUpdate("DELETE FROM " + dbTable);
     System.out.println(dbTable + " успешно очищена!");
+    }
+    public ResultSet dbGetCost(Connection connection, String getCostString,
+                     String param1)
+            throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(getCostString);
+        preparedStatement.setString(1,param1);
+        return preparedStatement.executeQuery();
+    }
+}
+
+class MyConsoleAppForDB {
+
+    MyConsoleAppForDB(DBUse db) {
+        String getCostString = "SELECT cost FROM goods WHERE title=?";
+        try {
+            db.go();
+            Scanner scanner = new Scanner(System.in);
+            System.out.println();
+            System.out.println("Хай! Это консолька для взаимодействия с базой данных.\n" +
+                    "Использование:\n" +
+                    " /c 'товар' - показать цену товара,\n" +
+                    " /cu 'товар' 'цена' - изменить цену товара,\n" +
+                    " /di 'цена1' 'цена2' - вывести товары в указанном ценовом диапазоне;");
+            String[] strings = scanner.nextLine().split(" ");
+            switch (strings[0]){
+                case "/c":
+                    try {
+                        ResultSet resultSet = db.dbGetCost(db.connection,
+                                getCostString,strings[1]);
+                        while (resultSet.next()) {
+//                            String id = resultSet.getString("id");
+                            String prodid = resultSet.getString("prodid");
+                            String title = resultSet.getString("title");
+                            String cost = resultSet.getString("cost");
+                            System.out.println(prodid + " " + title + " " + cost);
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        System.out.println("Аппликушка сообщает об ошибке...");
+                    }
+                    break;
+                case "/cu":
+//                System.out.println("Выбор: /сu!");
+                    break;
+                case "/di":
+//                System.out.println("Выбор: /di!");
+                    break;
+                default:
+                    System.out.println("Нет такой команды!");
+            }
+        } catch (SQLException | NullPointerException exception) {
+            exception.printStackTrace();
+            System.out.println("Что-то пошло не так...");
+            try {
+                db.connection.rollback();
+                System.out.println("Откат изменений!... Done!");
+            } catch (SQLException | NullPointerException e) {
+                e.printStackTrace();
+                System.out.println("Не удалось откатить транзакцию!");
+            }
+        } finally {
+            try {
+                db.connection.close();
+                System.out.println("Закрываем соединение... Done!");
+            } catch (SQLException | NullPointerException e) {
+                e.printStackTrace();
+                System.out.println("Не удалось закрыть соединений!");
+            }
+        }
     }
 }
