@@ -72,12 +72,19 @@ class DBUse {
     statement.executeUpdate("DELETE FROM " + dbTable);
     System.out.println(dbTable + " успешно очищена!");
     }
-    public ResultSet dbGetCost(Connection connection, String getCostString,
-                     String param1)
+    public ResultSet dbGetCost(String getCostString, String param1)
             throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(getCostString);
         preparedStatement.setString(1,param1);
         return preparedStatement.executeQuery();
+    }
+    public void upTabelString(String upTableString, Integer param1, String param2)
+            throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(upTableString);
+        preparedStatement.setInt(1,param1);
+        preparedStatement.setString(2,param2);
+        preparedStatement.executeUpdate();
+        connection.commit();
     }
 }
 
@@ -85,21 +92,21 @@ class MyConsoleAppForDB {
 
     MyConsoleAppForDB(DBUse db) {
         String getCostString = "SELECT cost FROM goods WHERE title=?";
+        String upTableString = "UPDATE goods SET cost=? WHERE title=?";
         try {
             db.go();
             Scanner scanner = new Scanner(System.in);
             System.out.println();
             System.out.println("Хай! Это консолька для взаимодействия с базой данных.\n" +
                     "Использование:\n" +
-                    " /c 'товар' - показать цену товара,\n" +
-                    " /cu 'товар' 'цена' - изменить цену товара,\n" +
-                    " /di 'цена1' 'цена2' - вывести товары в указанном ценовом диапазоне;");
+                    " /c товар - показать цену товара,\n" +
+                    " /cu товар цена - изменить цену товара,\n" +
+                    " /di цена1 цена2 - вывести товары в указанном ценовом диапазоне;");
             String[] strings = scanner.nextLine().split(" ");
             switch (strings[0]){
                 case "/c":
                     try {
-                        ResultSet resultSet = db.dbGetCost(db.connection,
-                                getCostString,strings[1]);
+                        ResultSet resultSet = db.dbGetCost(getCostString,strings[1]);
                         boolean flag = false;
                         while (resultSet.next()) {
                             flag = true;
@@ -114,7 +121,13 @@ class MyConsoleAppForDB {
                     }
                     break;
                 case "/cu":
-//                System.out.println("Выбор: /сu!");
+                    try {
+                        db.upTabelString(upTableString,Integer.parseInt(strings[2]),strings[1]);
+                        System.out.println("Вроде все хорошо...");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        System.out.println("Аппликушка сообщает об ошибке...");
+                    }
                     break;
                 case "/di":
 //                System.out.println("Выбор: /di!");
