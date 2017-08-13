@@ -14,80 +14,78 @@ package ru.geekbrains.java3.dz.dz2.petrikovskiypavel;
 import java.sql.*;
 import java.io.*;
 
-public class __Main {
+public class HomeWork2 {
 
-    //final String FILE_NAME = "List.csv";
-    public static String dbUrl = "jdbc:postgresql://localhost:5432/postgres";
-    public static String user = "postgres";
-    public static String password = "postgres";
-    //final String DRIVER_NAME = "//localhost:5432/postgres";
+    final String FILE_NAME = "List.csv";
+    final String DRIVER_NAME = "org.sqlite.JDBC";
     final String NAME_DB = "store.db";
     final String TABLE_DB = "GOODS";
     final String CREATE_TBL =
             "CREATE TABLE if not exists " + TABLE_DB +
                     "(ID INTEGER PRIMARY KEY," +
-                    " PRODID  INTEGER UNIQUE INDEX," +
-                    " TITLE  TEXT," +
-                    " COST INTEGER)";
+                    " GRP1  TEXT," +
+                    " GRP2  TEXT," +
+                    " GRP3  TEXT," +
+                    " GRP4  TEXT," +
+                    " GRP5  TEXT," +
+                    " NAME  TEXT NOT NULL," +
+                    " VCODE TEXT," +
+                    " FNAME TEXT," +
+                    " PRICE INTEGER)";
     Connection connect = null;
     Statement stmt = null;
     ResultSet rs = null;
 
     public static void main(String[] args) {
-        new __Main().go();
+        new HomeWork2().go();
     }
 
     void go() {
         BufferedReader reader = null;
         String[] fields;
 
-        // open database
+        // open sqlite database
         open(NAME_DB);
         createTable(NAME_DB, TABLE_DB, CREATE_TBL);
 
         // read and parse the csv file
-//        try {
-//            reader = new BufferedReader(
-//                    new InputStreamReader(
-//                            new FileInputStream(FILE_NAME), "UTF-8"));
-//            String line = reader.readLine();
-//            while ((line = reader.readLine()) != null) {
-//                fields = line.split("\t");
-//                try {
-//                    rs = stmt.executeQuery("SELECT COUNT() FROM " + TABLE_DB + " WHERE ID=" + fields[6] + ";" );
-//                    if (rs.getInt("count()") == 0) {
-//                        add(NAME_DB, TABLE_DB, fields);
-//                    } else {
-//                        rs = stmt.executeQuery("SELECT GRP1,GRP2,GRP3,GRP4,GRP5,PRICE FROM " + TABLE_DB + " WHERE ID=" + fields[6] + ";" );
-//                        if (!fields[0].equals(rs.getString("GRP1")) ||
-//                                !fields[1].equals(rs.getString("GRP2")) ||
-//                                !fields[2].equals(rs.getString("GRP3")) ||
-//                                !fields[3].equals(rs.getString("GRP4")) ||
-//                                !fields[4].equals(rs.getString("GRP5")) ||
-//                                !fields[9].equals(rs.getString("PRICE"))) {
-//                            update(NAME_DB, TABLE_DB, fields);
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            close();
-//        }
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(FILE_NAME), "UTF-8"));
+            String line = reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                fields = line.split("\t");
+                try {
+                    rs = stmt.executeQuery("SELECT COUNT() FROM " + TABLE_DB + " WHERE ID=" + fields[6] + ";" );
+                    if (rs.getInt("count()") == 0) {
+                        add(NAME_DB, TABLE_DB, fields);
+                    } else {
+                        rs = stmt.executeQuery("SELECT GRP1,GRP2,GRP3,GRP4,GRP5,PRICE FROM " + TABLE_DB + " WHERE ID=" + fields[6] + ";" );
+                        if (!fields[0].equals(rs.getString("GRP1")) ||
+                                !fields[1].equals(rs.getString("GRP2")) ||
+                                !fields[2].equals(rs.getString("GRP3")) ||
+                                !fields[3].equals(rs.getString("GRP4")) ||
+                                !fields[4].equals(rs.getString("GRP5")) ||
+                                !fields[9].equals(rs.getString("PRICE"))) {
+                            update(NAME_DB, TABLE_DB, fields);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            close();
+        }
     }
 
     void open(String nameDB) { // open connection or create DB
         try {
-            DriverManager.registerDriver(new org.postgresql.Driver());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
             Class.forName(DRIVER_NAME);
-            connect = DriverManager.getConnection(dbUrl, user, password);
+            connect = DriverManager.getConnection("jdbc:sqlite:" + nameDB);
             System.out.println("Opening DB " + nameDB + " successfully");
         } catch (Exception e) {
             e.printStackTrace();

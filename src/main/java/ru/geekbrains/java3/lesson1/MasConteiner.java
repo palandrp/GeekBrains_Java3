@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class MasConteiner<T extends Number> {
     private T[] mas;
 
-    public double avg() {
+    double avg() {
         if (mas.length == 0) {
             return 0.0;
         }
@@ -19,12 +19,12 @@ public class MasConteiner<T extends Number> {
         return sum / mas.length;
     }
 
-    public  boolean equalsAvg(MasConteiner<? extends Number> masConteiner) {
+    boolean equalsAvg(MasConteiner<? extends Number> masConteiner) {
         return avg() == masConteiner.avg();
     }
 
 
-    public MasConteiner(T... mas) {
+    MasConteiner(T... mas) {
 //        this.mas = new T[8];  // error
         this.mas = mas;
     }
