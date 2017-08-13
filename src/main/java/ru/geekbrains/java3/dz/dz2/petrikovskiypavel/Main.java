@@ -19,7 +19,7 @@ class DBUse {
             " title TEXT NOT NULL, cost INTEGER NOT NULL)";
     private String addString =
             "INSERT INTO " + dbTable +
-            " (title,cost) VALUES ('good1',10)";
+            " (title,cost) VALUES (?,?)";
 //    private String tbDrop = "DROP TABLE " + dbTable;
     
     void go() {
@@ -30,7 +30,7 @@ class DBUse {
             connection.setAutoCommit(false);
             create(connection,dbName,dbTable,dbCreateString);
             clear(connection,dbTable);
-            add(connection,addString);
+            add(connection,addString,"krossy",100);
             connection.commit();
         } catch (SQLException | NullPointerException exception) {
             exception.printStackTrace();
@@ -67,10 +67,13 @@ class DBUse {
         System.out.println("Таблица " + dbTabele + " в БД " + dbName +
                 " успешно создана!");
     }
-    private void add(Connection connection, String addString)
+    private void add(Connection connection, String addString,
+                     String param1, Integer param2)
             throws SQLException {
-        Statement statement = connection.createStatement();
-        statement.executeUpdate(addString);
+        PreparedStatement preparedStatement = connection.prepareStatement(addString);
+        preparedStatement.setString(1,param1);
+        preparedStatement.setInt(2,param2);
+        preparedStatement.executeUpdate();
         System.out.println("Запись добавлена в таблицу " + dbTable +
                 " в БД " + dbName + " успешно!");
     }
