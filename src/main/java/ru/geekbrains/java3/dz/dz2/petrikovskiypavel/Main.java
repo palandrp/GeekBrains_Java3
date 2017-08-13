@@ -101,11 +101,11 @@ class MyConsoleAppForDB {
                         ResultSet resultSet = db.dbGetCost(db.connection,
                                 getCostString,strings[1]);
                         while (resultSet.next()) {
-                            String id = resultSet.getString("id");
-                            String prodid = resultSet.getString("prodid");
-                            String title = resultSet.getString("title");
+//                            String id = resultSet.getString("id");
+//                            String prodid = resultSet.getString("prodid");
+//                            String title = resultSet.getString("title");
                             String cost = resultSet.getString("cost");
-                            System.out.println(id + " " + prodid + " " + title + " " + cost);
+                            System.out.println("Цена товара: " + cost);
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
