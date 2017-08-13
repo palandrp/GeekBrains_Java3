@@ -86,6 +86,13 @@ class DBUse {
         preparedStatement.executeUpdate();
         connection.commit();
     }
+    public ResultSet showListString(String showListString, Integer param1, Integer param2)
+            throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(showListString);
+        preparedStatement.setInt(1,param1);
+        preparedStatement.setInt(2,param2);
+        return preparedStatement.executeQuery();
+    }
 }
 
 class MyConsoleAppForDB {
@@ -93,6 +100,8 @@ class MyConsoleAppForDB {
     MyConsoleAppForDB(DBUse db) {
         String getCostString = "SELECT cost FROM goods WHERE title=?";
         String upTableString = "UPDATE goods SET cost=? WHERE title=?";
+        String showListString = "SELECT title,cost FROM goods " +
+                "WHERE cost>=? AND cost<=?";
         try {
             db.go();
             Scanner scanner = new Scanner(System.in);
@@ -130,7 +139,19 @@ class MyConsoleAppForDB {
                     }
                     break;
                 case "/di":
-//                System.out.println("Выбор: /di!");
+                    try {
+                        ResultSet resultSet = db.showListString(showListString,
+                                Integer.parseInt(strings[1]),
+                                Integer.parseInt(strings[2]));
+                        while (resultSet.next()) {
+                            String title = resultSet.getString("title");
+                            String cost = resultSet.getString("cost");
+                            System.out.println("Товар: " + title + " " + "Цена: " + cost);
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        System.out.println("Аппликушка сообщает об ошибке...");
+                    }
                     break;
                 default:
                     System.out.println("Нет такой команды!");
