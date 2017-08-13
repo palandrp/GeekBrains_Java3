@@ -1,0 +1,17 @@
+CREATE TABLE main
+(
+  password character varying(100),
+  nickname character varying(100),
+  login character varying(100)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE main
+  OWNER TO postgres;
+
+
+
+
+select nickname, login, password from main;
+insert into main (nickname, login, password) values ('w', 'w2', 'w3');
