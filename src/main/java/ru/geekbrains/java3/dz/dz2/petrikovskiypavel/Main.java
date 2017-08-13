@@ -30,10 +30,10 @@ class DBUse {
         connection = open(DBURL,USER,PASSWORD);
 //            drop(connection);
         connection.setAutoCommit(false);
-        create(connection,dbName,dbTable,dbCreateString);
-        clear(connection,dbTable);
+        create(dbName,dbTable,dbCreateString);
+        clear(dbTable);
         for (int i=1; i < 10001; i++) {
-            add(connection,addString,"good" + i,i*10);
+            add(addString,"good" + i,i*10);
         }
         connection.commit();
     }
@@ -44,16 +44,14 @@ class DBUse {
         System.out.println("Подключение к базе данных прошло успешно!\n");
         return connection;
     }
-    private void create(Connection connection, String dbName,
-                        String dbTabele, String dbString)
+    private void create(String dbName, String dbTabele, String dbString)
             throws SQLException {
         Statement statement = connection.createStatement();
         statement.executeUpdate(dbString);
         System.out.println("Таблица " + dbTabele + " в БД " + dbName +
                 " успешно создана!");
     }
-    private void add(Connection connection, String addString,
-                     String param1, Integer param2)
+    private void add(String addString, String param1, Integer param2)
             throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(addString);
         preparedStatement.setString(1,param1);
@@ -69,8 +67,7 @@ class DBUse {
 //        System.out.println("Успешно удалена таблица " + dbTable +
 //                " в БД " + dbName + "!");
 //    }
-    private void clear(Connection connection, String dbTable)
-        throws SQLException {
+    private void clear(String dbTable) throws SQLException {
     Statement statement = connection.createStatement();
     statement.executeUpdate("DELETE FROM " + dbTable);
     System.out.println(dbTable + " успешно очищена!");
@@ -104,11 +101,11 @@ class MyConsoleAppForDB {
                         ResultSet resultSet = db.dbGetCost(db.connection,
                                 getCostString,strings[1]);
                         while (resultSet.next()) {
-//                            String id = resultSet.getString("id");
+                            String id = resultSet.getString("id");
                             String prodid = resultSet.getString("prodid");
                             String title = resultSet.getString("title");
                             String cost = resultSet.getString("cost");
-                            System.out.println(prodid + " " + title + " " + cost);
+                            System.out.println(id + " " + prodid + " " + title + " " + cost);
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
