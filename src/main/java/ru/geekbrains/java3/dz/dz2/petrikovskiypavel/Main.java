@@ -57,8 +57,8 @@ class DBUse {
         preparedStatement.setString(1,param1);
         preparedStatement.setInt(2,param2);
         preparedStatement.executeUpdate();
-        System.out.println("Запись добавлена в таблицу " + dbTable +
-                " в БД " + dbName + " успешно!");
+//        System.out.println("Запись добавлена в таблицу " + dbTable +
+//                " в БД " + dbName + " успешно!");
     }
 //    private void drop(Connection connection)
 //            throws SQLException {
@@ -100,13 +100,14 @@ class MyConsoleAppForDB {
                     try {
                         ResultSet resultSet = db.dbGetCost(db.connection,
                                 getCostString,strings[1]);
+                        boolean flag = false;
                         while (resultSet.next()) {
-//                            String id = resultSet.getString("id");
-//                            String prodid = resultSet.getString("prodid");
-//                            String title = resultSet.getString("title");
+                            flag = true;
                             String cost = resultSet.getString("cost");
                             System.out.println("Цена товара: " + cost);
                         }
+                        if (!flag)
+                            System.out.println("Нет такого товара: " + strings[1]);
                     } catch (SQLException e) {
                         e.printStackTrace();
                         System.out.println("Аппликушка сообщает об ошибке...");
