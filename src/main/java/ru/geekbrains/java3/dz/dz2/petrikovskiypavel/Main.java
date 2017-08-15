@@ -72,10 +72,11 @@ class DBHandler {
         preparedStatement.setInt(2,param2);
         preparedStatement.executeUpdate();
     }
-    private void clear(String dbTable) throws SQLException {
-    Statement statement = connection.createStatement();
-    statement.executeUpdate("DELETE FROM " + dbTable);
-    System.out.println(dbTable + " успешно очищена!");
+    private void clear(String dbTable)
+            throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("DELETE FROM " + dbTable);
+        System.out.println(dbTable + " успешно очищена!");
     }
     public ResultSet dbhGetCost(String getCostString, String param1)
             throws SQLException {
