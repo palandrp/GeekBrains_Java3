@@ -1,6 +1,7 @@
 package ru.geekbrains.java3.dz.dz3.petrikovskiypavel;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -27,8 +28,11 @@ public class MiniReader {
         new MiniReader().go();
     }
     void go() {
+        System.out.println("Введите имя файла: ");
         Scanner scanner = new Scanner(System.in);
-        try { toByteA(scanner.nextLine()); }
+        try {
+            System.out.println(Arrays.toString(toByteA(scanner.nextLine())));
+        }
         catch (IOException e) {
             e.printStackTrace();
             System.out.println("Что-то пошло не так...");
@@ -37,8 +41,8 @@ public class MiniReader {
     byte[] toByteA(String name) throws IOException {
         File file = new File(name);
         byte[] byteA = new byte[(int)file.length()];
-        FileInputStream fileInputStream = new FileInputStream(file);
-        fileInputStream.read(byteA);
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        bis.read(byteA);
         return byteA;
     }
 
