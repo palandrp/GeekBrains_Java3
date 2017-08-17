@@ -22,18 +22,18 @@ public class MiniReader {
         new MiniReader().go();
     }
     void go() {
-        System.out.println("Введите имя файла: ");
+//        System.out.println("Введите имя файла: ");
         Scanner scanner = new Scanner(System.in);
-        String filename = scanner.nextLine();
+//        String filename = scanner.nextLine();
         try {
             // Задание 1
-            toByteA(filename);
+//            toByteA(filename);
             // Задание 2
-            FileOutputStream out = new FileOutputStream("New File.txt", true);
-            for (int i = 0; i < 10; i++) {
-                byte[] bA = toByteA(filename);
-                out.write(bA);
-            }
+//            FileOutputStream out = new FileOutputStream("New File.txt", true);
+//            for (int i = 0; i < 10; i++) {
+//                byte[] bA = toByteA(filename);
+//                out.write(bA);
+//            }
             // Задание 3
             // Читаем страницу из большого файла,
             // Для простоты используем созданный в задании 2 файл,
@@ -61,15 +61,21 @@ public class MiniReader {
     private void print(String filename, Scanner sc) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(filename, "r");
         int x = 0;
+        long time0 = System.currentTimeMillis();
+        time0 = System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder("");
         while (x != -1) {
             raf.seek(x*3600);
             for (int i = 0; i < 3600; i++) {
-                System.out.print((char) raf.read());
+                x = raf.read();
+                sb.append((char)x);
             }
+            System.out.print(sb.toString());
             System.out.println();
-            System.out.println("Следующая страница,");
+            System.out.println("Следующая страница,   " + (System.currentTimeMillis() - time0));
             System.out.print("(-1 для выхода, номер первой страницы - \"0\"): ");
             x = sc.nextInt();
+            sb.setLength(0);
         }
     }
 }
