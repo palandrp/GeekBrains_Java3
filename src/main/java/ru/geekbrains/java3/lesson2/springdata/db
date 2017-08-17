@@ -1,0 +1,25 @@
+CREATE TABLE contact
+(
+id serial NOT NULL,
+lastname character(50),
+firstname character(50)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE contact
+OWNER TO postgres;
+
+
+CREATE SEQUENCE hibernate_sequence
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 4
+  CACHE 1;
+ALTER TABLE hibernate_sequence
+  OWNER TO postgres;
+
+
+
+  http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
