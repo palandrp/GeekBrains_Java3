@@ -30,12 +30,20 @@ public class MiniReader {
     void go() {
         System.out.println("Введите имя файла: ");
         Scanner scanner = new Scanner(System.in);
+        String filename = scanner.nextLine();
         try {
-            System.out.println(Arrays.toString(toByteA(scanner.nextLine())));
+            // Задание 1
+            toByteA(filename);
+            // Задание 2
+            FileOutputStream out = new FileOutputStream("New File.txt", true);
+            for (int i = 0; i < 10; i++) {
+                byte[] bA = toByteA(filename);
+                out.write(bA);
+            }
         }
         catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Что-то пошло не так...");
+            System.out.println("Что-то пошло не так... Скорее всего неверное имя файла.");
         }
     }
     byte[] toByteA(String name) throws IOException {
