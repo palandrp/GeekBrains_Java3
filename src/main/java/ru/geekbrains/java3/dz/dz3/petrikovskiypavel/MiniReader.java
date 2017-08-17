@@ -20,7 +20,7 @@ import java.util.Scanner;
  * Чтобы не было проблем с кодировкой используйте латинские буквы.
  *
  * @author Paul Petrikovskiy
- * @version 16 Aug 2017
+ * @version 17 Aug 2017
  */
 public class MiniReader {
 
@@ -28,18 +28,23 @@ public class MiniReader {
         new MiniReader().go();
     }
     void go() {
-        System.out.println("Введите имя файла: ");
+//        System.out.println("Введите имя файла: ");
         Scanner scanner = new Scanner(System.in);
-        String filename = scanner.nextLine();
+//        String filename = scanner.nextLine();
         try {
             // Задание 1
-            toByteA(filename);
+//            toByteA(filename);
             // Задание 2
-            FileOutputStream out = new FileOutputStream("New File.txt", true);
-            for (int i = 0; i < 10; i++) {
-                byte[] bA = toByteA(filename);
-                out.write(bA);
-            }
+//            FileOutputStream out = new FileOutputStream("New File.txt", true);
+//            for (int i = 0; i < 10; i++) {
+//                byte[] bA = toByteA(filename);
+//                out.write(bA);
+//            }
+            // Задание 3
+            // Читаем страницу из большого файла,
+            // Для простоты используем созданный в задании 2 файл,
+            // который называется New File.txt
+            new ConsoleApp("New File.txt",scanner);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -54,4 +59,23 @@ public class MiniReader {
         return byteA;
     }
 
+    class ConsoleApp {
+        ConsoleApp(String filename, Scanner sc) throws IOException {
+            print(filename,sc);
+        }
+    }
+    private void print(String filename, Scanner sc) throws IOException {
+        RandomAccessFile raf = new RandomAccessFile(filename, "r");
+        int x = 0;
+        while (x != -1) {
+            raf.seek(x*1800);
+            for (int i = 0; i < 1800; i++) {
+                System.out.print((char) raf.read());
+            }
+            System.out.println();
+            System.out.println("Следующая страница,");
+            System.out.print("(-1 для выхода, номер первой страницы - \"0\"): ");
+            x = sc.nextInt();
+        }
+    }
 }
