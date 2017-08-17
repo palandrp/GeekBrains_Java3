@@ -1,8 +1,7 @@
 package ru.geekbrains.java3.dz.dz3.petrikovskiypavel;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.Scanner;
 
 /**
  * Домашнее задание:
@@ -22,34 +21,25 @@ import java.io.IOException;
  * @author Paul Petrikovskiy
  * @version 16 Aug 2017
  */
-public class Main {
+public class MiniReader {
 
     public static void main(String[] args) {
-        System.out.println("Hello java!");
+        new MiniReader().go();
     }
-
-    class MiniReader {
-        String filename = "";
-
-        MiniReader(String filename) {
-            this.filename = filename;
-        }
-        void outToConsole() throws IOException {
-            StringBuilder sb = new StringBuilder("");
-            BufferedInputStream in =
-                    new BufferedInputStream(new FileInputStream(filename));
-            int x;
-            do {
-                x = in.read();
-                sb.append((char)x);
-            } while (x != -1);
-        }
-        void concatFiles() {
-
+    void go() {
+        Scanner scanner = new Scanner(System.in);
+        try { toByteA(scanner.nextLine()); }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Что-то пошло не так...");
         }
     }
-
-    class ConsoleApp {
-
+    byte[] toByteA(String name) throws IOException {
+        File file = new File(name);
+        byte[] byteA = new byte[(int)file.length()];
+        FileInputStream fileInputStream = new FileInputStream(file);
+        fileInputStream.read(byteA);
+        return byteA;
     }
+
 }
