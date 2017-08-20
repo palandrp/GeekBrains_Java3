@@ -61,20 +61,16 @@ public class MiniReader {
     private void print(String filename, Scanner sc) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(filename, "r");
         int x = 0;
-        StringBuilder sb = new StringBuilder("");
         while (x != -1) {
             long time0 = System.currentTimeMillis();
             raf.seek(x*3600);
             for (int i = 0; i < 3600; i++) {
-                x = raf.read();
-                sb.append((char)x);
+                System.out.print((char)raf.read());
             }
-            System.out.print(sb.toString());
             System.out.println();
             System.out.println("Следующая страница,   " + (System.currentTimeMillis() - time0));
             System.out.print("(-1 для выхода, номер первой страницы - \"0\"): ");
             x = sc.nextInt();
-            sb.setLength(0);
         }
     }
 }
