@@ -61,10 +61,9 @@ public class MiniReader {
     private void print(String filename, Scanner sc) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(filename, "r");
         int x = 0;
-        long time0 = System.currentTimeMillis();
-        time0 = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder("");
         while (x != -1) {
+            long time0 = System.currentTimeMillis();
             raf.seek(x*3600);
             for (int i = 0; i < 3600; i++) {
                 x = raf.read();
