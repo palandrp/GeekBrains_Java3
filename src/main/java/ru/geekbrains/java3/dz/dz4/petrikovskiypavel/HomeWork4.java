@@ -16,29 +16,22 @@ package ru.geekbrains.java3.dz.dz4.petrikovskiypavel;
  */
 public class HomeWork4 {
     String ch = "";
-    public static void main(String[] args) {
-        new HomeWork4().go();
-    }
+    public static void main(String[] args) { new HomeWork4().go(); }
     void go(){
         Printer p = new Printer();
-        new Sender(p,'A');
-        new Sender(p,'B');
-        new Sender(p,'C');
-
+        new Thread(new Sender(p,'A')).start();
+        new Thread(new Sender(p,'B')).start();
+        new Thread(new Sender(p,'C')).start();
     }
 }
 class Printer {
-    boolean valueSet = true;
-    synchronized void print(char ch){
-        while (!valueSet) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+    boolean wait = false;
+    synchronized void print(char ch) throws InterruptedException {
+        if (wait) wait();
+        wait = true;
         System.out.print(ch);
-        valueSet = false;
+    }
+    synchronized void gogogo() throws InterruptedException {
         notify();
     }
 }
@@ -48,11 +41,15 @@ class Sender implements Runnable {
     Sender(Printer printer, char ch) {
         this.p = printer;
         this.ch = ch;
-        new Thread(this).start();
     }
     public void run() {
         for (int i = 0; i < 5; i++) {
-            p.print(ch);
+            try {
+                p.print(ch);
+                p.gogogo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
